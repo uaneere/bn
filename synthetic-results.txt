@@ -1,0 +1,45 @@
+Bayesian network prototype (discrete, Dirichlet smoothing)
+=======================================================
+Structure: NYHA -> cfDNA; NYHA -> VIS; cfDNA -> VIS; cfDNA -> IVL; VIS -> IVL
+Samples:   synthetic ancestral sampling n=4000 seed=42
+Learning:  Dirichlet alpha=1.000
+
+Learned CPTs
+------------
+CPT NYHA | []
+  P(I_II)=0.6569 P(III_IV)=0.3431
+CPT cfDNA | [NYHA]
+  [NYHA=I_II] P(low)=0.8042 P(high)=0.1958
+  [NYHA=III_IV] P(low)=0.2977 P(high)=0.7023
+CPT VIS | [NYHA, cfDNA]
+  [NYHA=I_II, cfDNA=low] P(low)=0.8549 P(high)=0.1451
+  [NYHA=I_II, cfDNA=high] P(low)=0.4516 P(high)=0.5484
+  [NYHA=III_IV, cfDNA=low] P(low)=0.4585 P(high)=0.5415
+  [NYHA=III_IV, cfDNA=high] P(low)=0.2246 P(high)=0.7754
+CPT IVL | [cfDNA, VIS]
+  [cfDNA=low, VIS=low] P(le24h)=0.8968 P(gt24h)=0.1032
+  [cfDNA=low, VIS=high] P(le24h)=0.4707 P(gt24h)=0.5293
+  [cfDNA=high, VIS=low] P(le24h)=0.5733 P(gt24h)=0.4267
+  [cfDNA=high, VIS=high] P(le24h)=0.1589 P(gt24h)=0.8411
+Parameter recovery (max |P_hat - P_true| per CPT)
+-------------------------------------------------
+  NYHA    0.0069
+  cfDNA   0.0042
+  VIS     0.0415
+  IVL     0.0233
+
+Query: P(IVL | VIS=high, cfDNA=high)
+------
+  learned (enumeration):
+    P(IVL=le24h) = 0.1589
+    P(IVL=gt24h) = 0.8411
+  learned (var. elim.):
+    P(IVL=le24h) = 0.1589
+    P(IVL=gt24h) = 0.8411
+  true generative CPT:
+    P(IVL=le24h) = 0.1500
+    P(IVL=gt24h) = 0.8500
+
+|enum - VE|_∞ = 2.78e-17
+|learned - true|_∞ = 0.0089
+inference wall time: 0s
